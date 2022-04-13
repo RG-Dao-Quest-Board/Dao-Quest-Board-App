@@ -31,31 +31,31 @@ import { omit } from './general';
 // } from '../graphQL/boost-queries';
 // import { MINION_TYPES } from './proposalUtils';
 import { proposalResolver, daoResolver } from './resolvers';
-// import { calcTotalUSD, fetchTokenData } from './tokenValue';
+import { calcTotalUSD, fetchTokenData } from './tokenValue';
 // import { UBERHAUS_DATA } from './uberhaus';
 
 const SNAPSHOT_ENDPOINT = 'https://hub.snapshot.org/graphql';
 
-// export const graphFetchAll = async (args, items = [], skip = 0) => {
-//   try {
-//     const { endpoint, query, variables, subfield } = args;
-//     const result = await graphQuery({
-//       endpoint,
-//       query,
-//       variables: {
-//         ...variables,
-//         skip,
-//       },
-//     });
-//     const newItems = result[subfield];
-//     if (newItems.length === 1000) {
-//       return graphFetchAll(args, [...newItems, ...items], skip + 1000);
-//     }
-//     return [...items, ...newItems];
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+export const graphFetchAll = async (args, items = [], skip = 0) => {
+  try {
+    const { endpoint, query, variables, subfield } = args;
+    const result = await graphQuery({
+      endpoint,
+      query,
+      variables: {
+        ...variables,
+        skip,
+      },
+    });
+    const newItems = result[subfield];
+    if (newItems.length === 1000) {
+      return graphFetchAll(args, [...newItems, ...items], skip + 1000);
+    }
+    return [...items, ...newItems];
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 // export const fetchBankValues = async args => {
 //   return graphFetchAll({
@@ -94,7 +94,7 @@ const SNAPSHOT_ENDPOINT = 'https://hub.snapshot.org/graphql';
 //   return null;
 // };
 
-export const getSnapshotSpaces = async id => {
+export const getSnapshotSpaces = async (id) => {
   try {
     return graphQuery({
       endpoint: SNAPSHOT_ENDPOINT,
@@ -398,48 +398,48 @@ export const getSnapshotSpaces = async id => {
 //       console.error(error);
 //     }
 //   },
-  // async getActivities(args, setter) {
-  //   try {
-  //     const metadata = await fetchMetaData(args.daoID);
+// async getActivities(args, setter) {
+//   try {
+//     const metadata = await fetchMetaData(args.daoID);
 
-  //     const activity = metadata[0]?.boosts?.SPAM_FILTER?.active
-  //       ? await fetchSpamFilterActivity({
-  //           ...args,
-  //           requiredTributeToken:
-  //             metadata[0].boosts.SPAM_FILTER.metadata.paymentToken,
-  //           requiredTributeMin:
-  //             metadata[0].boosts.SPAM_FILTER.metadata.paymentRequested,
-  //         })
-  //       : await fetchAllActivity(args);
+//     const activity = metadata[0]?.boosts?.SPAM_FILTER?.active
+//       ? await fetchSpamFilterActivity({
+//           ...args,
+//           requiredTributeToken:
+//             metadata[0].boosts.SPAM_FILTER.metadata.paymentToken,
+//           requiredTributeMin:
+//             metadata[0].boosts.SPAM_FILTER.metadata.paymentRequested,
+//         })
+//       : await fetchAllActivity(args);
 
-  //     const resolvedActivity = {
-  //       id: args.daoID,
-  //       rageQuits: activity.rageQuits,
-  //       proposals: activity.proposals.map(proposal =>
-  //         proposalResolver(proposal, {
-  //           status: true,
-  //           title: true,
-  //           description: true,
-  //           link: true,
-  //           hash: true,
-  //           proposalType: true,
-  //         }),
-  //       ),
-  //     };
+//     const resolvedActivity = {
+//       id: args.daoID,
+//       rageQuits: activity.rageQuits,
+//       proposals: activity.proposals.map(proposal =>
+//         proposalResolver(proposal, {
+//           status: true,
+//           title: true,
+//           description: true,
+//           link: true,
+//           hash: true,
+//           proposalType: true,
+//         }),
+//       ),
+//     };
 
-  //     if (setter.setDaoActivities) {
-  //       setter.setDaoActivities(resolvedActivity);
-  //     }
-  //     if (setter.setDaoProposals) {
-  //       setter.setDaoProposals(resolvedActivity.proposals);
-  //     }
-  //     if (setter.setUberProposals) {
-  //       setter.setUberProposals(resolvedActivity.proposals);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // },
+//     if (setter.setDaoActivities) {
+//       setter.setDaoActivities(resolvedActivity);
+//     }
+//     if (setter.setDaoProposals) {
+//       setter.setDaoProposals(resolvedActivity.proposals);
+//     }
+//     if (setter.setUberProposals) {
+//       setter.setUberProposals(resolvedActivity.proposals);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// },
 //   async getMembers(args, setter) {
 //     try {
 //       const graphMembers = await graphFetchAll({
@@ -519,9 +519,9 @@ export const hubChainQuery = async ({
   const daoMapLookup = (address, chainName) => {
     const daoMatch = metaDataMap[address] || [];
 
-    return daoMatch.find(dao => dao.network === chainName) || null;
+    return daoMatch.find((dao) => dao.network === chainName) || null;
   };
-  buildCrossChainQuery(supportedChains, endpointType).forEach(async chain => {
+  buildCrossChainQuery(supportedChains, endpointType).forEach(async (chain) => {
     try {
       const chainData = await graphQuery({
         endpoint: chain.endpoint,
@@ -530,12 +530,12 @@ export const hubChainQuery = async ({
       });
 
       const withMetaData = chainData?.membersHub
-        .map(dao => {
+        .map((dao) => {
           const withResolvedProposals = {
             ...dao,
             moloch: {
               ...omit('proposals', dao.moloch),
-              proposals: dao.moloch.proposals.map(proposal =>
+              proposals: dao.moloch.proposals.map((proposal) =>
                 proposalResolver(proposal, {
                   proposalType: true,
                   description: true,
@@ -551,7 +551,7 @@ export const hubChainQuery = async ({
             meta: daoMapLookup(dao?.moloch?.id, chain.apiMatch),
           };
         })
-        .filter(dao => {
+        .filter((dao) => {
           const notHiddenAndHasMetaOrIsUnregisteredSummoner =
             (dao.meta && !dao.meta.hide) ||
             (!dao.meta &&
@@ -563,7 +563,7 @@ export const hubChainQuery = async ({
           return notHiddenAndHasMetaOrIsUnregisteredSummoner && hasNoSharesLoot;
         });
 
-      reactSetter(prevState => [
+      reactSetter((prevState) => [
         ...prevState,
         { ...chain, data: withMetaData },
       ]);
@@ -573,49 +573,49 @@ export const hubChainQuery = async ({
   });
 };
 
-// export const exploreChainQuery = async ({
-//   query,
-//   supportedChains,
-//   endpointType,
-//   reactSetter,
-//   apiFetcher,
-// }) => {
-//   const metaDataMap = await apiFetcher();
-//   const prices = await fetchTokenData();
+export const exploreChainQuery = async ({
+  query,
+  supportedChains,
+  endpointType,
+  reactSetter,
+  apiFetcher,
+}) => {
+  const metaDataMap = await apiFetcher();
+  const prices = await fetchTokenData();
 
-//   const daoMapLookup = (address, chainName) => {
-//     const daoMatch = metaDataMap[address] || [];
-//     return daoMatch.find(dao => dao.network === chainName) || null;
-//   };
-//   buildCrossChainQuery(supportedChains, endpointType).forEach(async chain => {
-//     try {
-//       const chainData = await graphFetchAll({
-//         endpoint: chain.endpoint,
-//         query,
-//         subfield: 'moloches',
-//       });
+  const daoMapLookup = (address, chainName) => {
+    const daoMatch = metaDataMap[address] || [];
+    return daoMatch.find((dao) => dao.network === chainName) || null;
+  };
+  buildCrossChainQuery(supportedChains, endpointType).forEach(async (chain) => {
+    try {
+      const chainData = await graphFetchAll({
+        endpoint: chain.endpoint,
+        query,
+        subfield: 'moloches',
+      });
 
-//       const withMetaData = chainData
-//         .map(dao => {
-//           const withResolvedDao = daoResolver(dao, { prices, chain });
-//           return {
-//             ...withResolvedDao,
-//             meta: daoMapLookup(dao?.id, chain.apiMatch),
-//           };
-//         })
-//         .filter(dao => !dao.meta || !dao.meta.hide);
+      const withMetaData = chainData
+        .map((dao) => {
+          const withResolvedDao = daoResolver(dao, { prices, chain });
+          return {
+            ...withResolvedDao,
+            meta: daoMapLookup(dao?.id, chain.apiMatch),
+          };
+        })
+        .filter((dao) => !dao.meta || !dao.meta.hide);
 
-//       reactSetter(prevState => {
-//         return {
-//           chains: [...prevState.chains, chain],
-//           data: [...prevState.data, ...withMetaData],
-//         };
-//       });
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   });
-// };
+      reactSetter((prevState) => {
+        return {
+          chains: [...prevState.chains, chain],
+          data: [...prevState.data, ...withMetaData],
+        };
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+};
 
 // export const balanceChainQuery = async ({ address, reactSetter }) => {
 //   const metaDataMap = await getApiMetadata();

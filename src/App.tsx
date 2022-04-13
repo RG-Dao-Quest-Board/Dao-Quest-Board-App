@@ -4,16 +4,21 @@ import {
   theme,
 } from "@chakra-ui/react"
 import { Header } from "./components/header"
-import { DaoSelect } from "./components/daoSelect"
 import { UserContextProvider } from './contexts/UserContext';
-import {Notice} from "./components/notice";
+import { Explore } from "./components/explore";
+import { ExploreContextProvider } from './contexts/ExploreContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 export const App = () => (
   <ChakraProvider theme={theme}>
     <UserContextProvider>
-
       <Header />
-      <DaoSelect />
-        <Notice />
+      <Router>
+        <Routes>
+          <Route path='/' element={<ExploreContextProvider><Explore /></ExploreContextProvider>}>
+          </Route>
+        </Routes>
+      </Router>
     </UserContextProvider>
   </ChakraProvider>
 )
