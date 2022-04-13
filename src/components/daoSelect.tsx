@@ -1,26 +1,13 @@
 import {
     Box,
     Flex,
-    Button,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    HStack,
     Text,
-    Link,
-    Input
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useInjectedProvider } from "../contexts/InjectedProviderContext";
 import { useUser } from '../contexts/UserContext';
 import { userHubDaosType, sortedDaosType } from "../types/userDao"
-declare var window: any;
 
 export const DaoSelect = () => {
-    const {
-        address,
-    } = useInjectedProvider();
     const { userHubDaos } = useUser();
     const [sortedDaos, setSortedDaos] = useState<sortedDaosType>();
     useEffect(() => {
