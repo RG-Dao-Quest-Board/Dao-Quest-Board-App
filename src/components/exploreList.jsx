@@ -2,17 +2,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FormControl, FormLabel, Select, Flex } from '@chakra-ui/react';
 import { DaoBoard } from './daoBoard';
 import { ExploreContext } from '../contexts/ExploreContext';
+import { getAllNotices } from "../services/noticeService";
 
 const ExploreList = ({ handleDaoCalculate }) => {
   const [daos, setDaos] = useState([]);
   const [selectedDao, setSelectedDao] = useState('');
+  const [allNotices, setAllNotices] = useState([]);
   const { state, exploreDaos } = useContext(ExploreContext);
 
   useEffect(() => {
     const filteredAndSortedDaos = exploreDaos.data
       .filter((dao) => {
         if (!dao.meta) {
-          console.log('unregistered dao', dao);
           return false;
         }
 
@@ -62,13 +63,32 @@ const ExploreList = ({ handleDaoCalculate }) => {
     handleDaoCalculate,
   ]);
 
-  const daoList = daos.map((dao, i) => {
+  const sortedDaos = daos.sort((a, b) => {
+    const nameA = a.meta.name.toUpperCase();
+    const nameB = b.meta.name.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const daoList = sortedDaos.map((dao) => {
     return (
       <option value={dao.meta.name} key={dao.id}>
         {dao.meta.name}
       </option>
     );
   });
+
+  useEffect(() => {
+    getAllNotices().then(notices => {
+      console.log('exploreList notices', notices);
+      setAllNotices(notices);
+    })},
+    []);
 
   return (
     <>
@@ -89,7 +109,7 @@ const ExploreList = ({ handleDaoCalculate }) => {
           </FormControl>
         </Flex>
       ) : null}
-      {selectedDao ? <DaoBoard dao={selectedDao} /> : ''}
+      {selectedDao ? <DaoBoard dao={selectedDao} notices={allNotices} /> : ''}
     </>
   );
 };
