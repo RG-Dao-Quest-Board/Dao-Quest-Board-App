@@ -3,7 +3,7 @@ import Draggable from 'react-draggable';
 import { useUser } from "../contexts/UserContext";
 import { userHubDaosType } from "../types/userDao";
 
-export const DaoBoard = (props: { dao: any, notices: any }) => {
+export const DaoBoard = (props: { dao: any, quests: any }) => {
     const { userHubDaos } = useUser();
     const userDaoMembershipNames = userHubDaos.reduce((daos: string[], network: userHubDaosType) => {
         if (network.data.length) {
@@ -12,35 +12,36 @@ export const DaoBoard = (props: { dao: any, notices: any }) => {
         return daos;
     }, []);
 
-    const daoNotices = props.notices.reduce((notices: any, notice: any) => {
-        if(notice.dao === props.dao) notices.push(notice);
-        return notices;
+    const daoQuests = props.quests.reduce((quests: any, quest: any) => {
+        if(quest.dao === props.dao) quests.push(quest);
+        return quests;
     }, []);
 
-    const currentDaoNotices = () => {
-        const currentNotices = daoNotices.length ? daoNotices.map((notice: any) => {
+    const currentDaoQuests = () => {
+        return daoQuests.length ? daoQuests.map((quest: any) => {
             const startingPosition = {
-                x: notice.position_x,
-                y: notice.position_y
+                x: quest.position_x,
+                y: quest.position_y
             };
             return (
-              <Draggable defaultPosition={startingPosition}>
+              <Draggable defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)}>
               <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
-                  {userDaoMembershipNames.includes(props.dao) ? <Textarea value={notice.quest_text} placeholder="Create a notice" marginTop={4} /> : "NOT a member"}
+                  <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_text} marginTop={4} />
               </Box>
           </Draggable>
         )}) : null;
-        return currentNotices;
     }
 
     return (
       <div>
-          {currentDaoNotices()}
-          <Draggable>
-              <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
-                  {userDaoMembershipNames.includes(props.dao) ? <Textarea placeholder="Create a notice" marginTop={4} /> : "NOT a member"}
-              </Box>
-          </Draggable>
+          {currentDaoQuests()}
+          {userDaoMembershipNames.includes(props.dao) && (
+              <Draggable defaultPosition={{x: 0, y: 0}}>
+                  <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
+                      {userDaoMembershipNames.includes(props.dao) ? <Textarea placeholder="Create a notice" marginTop={4} /> : "NOT a member"}
+                  </Box>
+              </Draggable>
+          )}
       </div>
     )
 };
