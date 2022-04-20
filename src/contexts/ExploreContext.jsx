@@ -22,6 +22,7 @@ const initialState = {
       .filter((o) => o.default)
       .map((o) => o.value),
   },
+  notices: [],
   searchTerm: null,
   sort: SORT_OPTIONS[0],
   tags: [],
@@ -50,6 +51,9 @@ const reducer = (state, action) => {
       const updatedFilters = { ...state.filters, ...action.payload };
 
       return { ...state, filters: updatedFilters };
+    }
+    case 'setNotices' : {
+      return { ...state, notices: action.payload };
     }
     case 'setSearchTerm': {
       return { ...state, searchTerm: action.payload };
