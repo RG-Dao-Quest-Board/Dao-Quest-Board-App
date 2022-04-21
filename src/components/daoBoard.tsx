@@ -2,12 +2,12 @@ import { Box, Button, Textarea } from "@chakra-ui/react";
 import { useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { useUser } from "../contexts/UserContext";
-import { createQuest } from "../services/noticeService";
+import { createQuest, deleteQuest } from "../services/noticeService";
 import { questType } from "../types/questType";
 import { userHubDaosType } from "../types/userDao";
 
 export const DaoBoard = (props: { dao: any, quests: any }) => {
-    let [questMessage, setQuestMessage] = useState<string>("");
+    const [questMessage, setQuestMessage] = useState<string>("");
     const [x, setX] = useState(0)
     const [y, setY] = useState(0)
 
@@ -20,9 +20,14 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
     }, []);
 
     const daoQuests = props.quests.reduce((quests: any, quest: any) => {
-        if(quest.dao === props.dao) quests.push(quest);
+        if (quest.dao === props.dao) quests.push(quest);
         return quests;
     }, []);
+
+    const handleDeleteQuest = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+        e.preventDefault();
+        deleteQuest(id).then((res) => { if (res) { console.log("Success! refresh to see the changes") } }).catch((error) => alert(error)); // TODO dont show deleted quest before refresh as well
+    }
 
     const currentDaoQuests = () => {
         return daoQuests.length ? daoQuests.map((quest: any) => {
@@ -31,9 +36,10 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
                 y: quest.position_y
             };
             return (
-                <Draggable defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)}>
+                <Draggable defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)} >
                     <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
                         <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_text} marginTop={4} />
+                        <Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteQuest(e, quest._id)} value={quest.id}>Delete</Button>
                     </Box>
                 </Draggable>
             )
@@ -54,7 +60,7 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
             position_y: y
         }
         console.log("QUEST:", quest)
-        createQuest(quest);
+        createQuest(quest).then((res) => { if (res) { alert("Success") } }).catch((error) => alert(error)); //TODO show posted quest after submit instead of after refresh
     }
 
 
@@ -68,10 +74,10 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
         <div>
             {currentDaoQuests()}
             {userDaoMembershipNames.includes(props.dao) && (
-                <Draggable defaultPosition={{ x: 0, y: 0 }} onStop={handleStop}  >
+                <Draggable bounds={{ top: -100, left: 0 }} defaultPosition={{ x: 0, y: 0 }} onStop={handleStop}  >
                     <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
                         {userDaoMembershipNames.includes(props.dao) ? <><Textarea value={questMessage}
-                            onChange={handleQuestChange} placeholder="Create a quest" marginTop={4} /><Button onClick={handlePostQuest} >Post Quest</Button></> : "NOT a member"}
+                            onChange={handleQuestChange} placeholder="Create a quest" marginTop={4} /><Button onClick={handlePostQuest} >Post Quest</Button> </> : "NOT a member"}
                     </Box>
                 </Draggable>
             )}

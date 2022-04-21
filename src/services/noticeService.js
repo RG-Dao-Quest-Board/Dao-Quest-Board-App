@@ -34,4 +34,14 @@ const createQuest = (quest) => {
     .catch((error) => error);
 };
 
-module.exports = { createQuest, getAllQuests };
+const deleteQuest = (id) => {
+  return fetch(`http://localhost:5001/delete/quest/${id}`, {
+    headers: { 'Content-Type': 'application/json' },
+    method: 'DELETE',
+  })
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => error);
+};
+
+module.exports = { createQuest, getAllQuests, deleteQuest };
