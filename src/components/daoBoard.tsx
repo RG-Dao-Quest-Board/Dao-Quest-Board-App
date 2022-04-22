@@ -8,6 +8,7 @@ import { userHubDaosType } from "../types/userDao";
 
 export const DaoBoard = (props: { dao: any, quests: any }) => {
     const [questMessage, setQuestMessage] = useState<string>("");
+    const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
     const [x, setX] = useState(0)
     const [y, setY] = useState(0)
 
@@ -36,10 +37,11 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
                 y: quest.position_y
             };
             return (
-                <Draggable defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)} >
+                <Draggable bounds="parent" defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)} >
                     <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
                         <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_text} marginTop={4} />
-                        <Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteQuest(e, quest._id)} value={quest.id}>Delete</Button>
+                        {userDaoMembershipNames.includes(props.dao) &&
+                            (<Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteQuest(e, quest._id)} value={quest.id}>Delete</Button>)}
                     </Box>
                 </Draggable>
             )
@@ -69,18 +71,46 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
         setX(data.x)
         setY(data.y)
     };
+    const handleCreateQuest = (e: React.MouseEvent<HTMLButtonElement>, show: boolean) => {
+        e.preventDefault();
+        setShowCreateForm(show);
+    }
+
 
     return (
-        <div>
-            {currentDaoQuests()}
-            {userDaoMembershipNames.includes(props.dao) && (
-                <Draggable bounds={{ top: -100, left: 0 }} defaultPosition={{ x: 0, y: 0 }} onStop={handleStop}  >
-                    <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
-                        {userDaoMembershipNames.includes(props.dao) ? <><Textarea value={questMessage}
-                            onChange={handleQuestChange} placeholder="Create a quest" marginTop={4} /><Button onClick={handlePostQuest} >Post Quest</Button> </> : "NOT a member"}
-                    </Box>
-                </Draggable>
-            )}
-        </div>
+        <Box>
+            {showCreateForm ? null :
+                userDaoMembershipNames.includes(props.dao) &&
+                (<Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleCreateQuest(e, true)} m={4}>
+                    Create Quest
+                </Button>)
+            }
+
+            <Box p={4} m={4} w="1000" h="1000" position={"relative"} borderWidth='5px' borderRadius="lg" borderColor={"blue.900"} overflow={"auto"}>
+                {
+                    showCreateForm ?
+                        userDaoMembershipNames.includes(props.dao) && (
+                            <Draggable bounds={"parent"} defaultPosition={{ x: 0, y: 0 }} onStop={handleStop}  >
+                                <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
+                                    {userDaoMembershipNames.includes(props.dao) ?
+                                        <>
+                                            <Textarea value={questMessage}
+                                                onChange={handleQuestChange} placeholder="Create a quest" marginY={4} />
+                                            <Button onClick={handlePostQuest} >Post Quest</Button>
+                                        </>
+                                        : "NOT a member"}
+                                    <Button ml={"5px"} onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleCreateQuest(e, false)}>
+                                        Close
+                                    </Button>
+                                </Box>
+
+                            </Draggable>
+                        )
+                        : null
+                }
+                {currentDaoQuests()}
+            </Box>
+
+        </Box>
     )
 };
