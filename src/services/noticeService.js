@@ -24,12 +24,24 @@ const getAllQuests = () => {
  */
 const createQuest = (quest) => {
   return fetch('http://localhost:5001/create/quest', {
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors',
     method: 'POST',
-    body: JSON.stringify(quest)
+    body: JSON.stringify(quest),
   })
-    .then(response => response.json())
-    .then(data => data)
-    .catch(error => error);
-}
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => error);
+};
 
-module.exports = { createQuest, getAllQuests };
+const deleteQuest = (id) => {
+  return fetch(`http://localhost:5001/delete/quest/${id}`, {
+    headers: { 'Content-Type': 'application/json' },
+    method: 'DELETE',
+  })
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => error);
+};
+
+module.exports = { createQuest, getAllQuests, deleteQuest };
