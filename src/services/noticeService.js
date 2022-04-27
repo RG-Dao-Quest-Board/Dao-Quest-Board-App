@@ -38,8 +38,9 @@ const deleteQuest = (id) => {
   return fetch(`http://localhost:5001/delete/quest/${id}`, {
     headers: { 'Content-Type': 'application/json' },
     method: 'DELETE',
+    mode: 'cors',
   })
-    .then((response) => response.json())
+    .then((response) => response.status)
     .then((data) => data)
     .catch((error) => error);
 };

@@ -1,17 +1,17 @@
 import { Box, Button, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { useUser } from "../contexts/UserContext";
-import { createQuest, deleteQuest } from "../services/noticeService";
+import { createQuest, deleteQuest, getAllQuests } from "../services/noticeService";
 import { questType } from "../types/questType";
 import { userHubDaosType } from "../types/userDao";
 
-export const DaoBoard = (props: { dao: any, quests: any }) => {
+export const DaoBoard = (props: { dao: any }) => {
     const [questMessage, setQuestMessage] = useState<string>("");
     const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
     const [x, setX] = useState(0)
     const [y, setY] = useState(0)
-
+    const [allQuests, setAllQuests] = useState([]);
     const { userHubDaos } = useUser();
     const userDaoMembershipNames = userHubDaos.reduce((daos: string[], network: userHubDaosType) => {
         if (network.data.length) {
@@ -19,19 +19,29 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
         }
         return daos;
     }, []);
+    const refreshAllQuests = useCallback(() => {
+        getAllQuests().then(quests => {
+            const daoQuests = quests.reduce((quests: any, quest: any) => {
+                if (quest.dao === props.dao) quests.push(quest);
+                return quests;
+            }, []);
+            console.log("DAOQUESTS", daoQuests)
+            setAllQuests(daoQuests);
+        })
+    }, [props.dao])
 
-    const daoQuests = props.quests.reduce((quests: any, quest: any) => {
-        if (quest.dao === props.dao) quests.push(quest);
-        return quests;
-    }, []);
+    useEffect(() => {
+        refreshAllQuests();
+    }, [props.dao, refreshAllQuests]);
 
-    const handleDeleteQuest = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    const handleDeleteQuest = useCallback((e: React.MouseEvent<HTMLButtonElement>, id: string) => {
         e.preventDefault();
-        deleteQuest(id).then((res) => { if (res) { console.log("Success! refresh to see the changes") } }).catch((error) => alert(error)); // TODO dont show deleted quest before refresh as well
-    }
+        deleteQuest(id).then((res) => { alert("Success"); refreshAllQuests() }).catch((error) => alert(error));
+        ;
+    }, [refreshAllQuests])
 
     const currentDaoQuests = () => {
-        return daoQuests.length ? daoQuests.map((quest: any) => {
+        return allQuests.length ? allQuests.map((quest: any) => {
             const startingPosition = {
                 x: quest.position_x,
                 y: quest.position_y
@@ -62,7 +72,7 @@ export const DaoBoard = (props: { dao: any, quests: any }) => {
             position_y: y
         }
         console.log("QUEST:", quest)
-        createQuest(quest).then((res) => { if (res) { alert("Success") } }).catch((error) => alert(error)); //TODO show posted quest after submit instead of after refresh
+        createQuest(quest).then((res) => { if (res) { alert("Success"); refreshAllQuests(); setShowCreateForm(false); } }).catch((error) => alert(error));
     }
 
 
