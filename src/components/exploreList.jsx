@@ -2,12 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FormControl, FormLabel, Select, Flex } from '@chakra-ui/react';
 import { DaoBoard } from './daoBoard';
 import { ExploreContext } from '../contexts/ExploreContext';
-import { getAllQuests } from "../services/noticeService";
 
 const ExploreList = ({ handleDaoCalculate }) => {
   const [daos, setDaos] = useState([]);
   const [selectedDao, setSelectedDao] = useState('');
-  const [allQuests, setAllQuests] = useState([]);
   const { state, exploreDaos } = useContext(ExploreContext);
 
   useEffect(() => {
@@ -83,12 +81,6 @@ const ExploreList = ({ handleDaoCalculate }) => {
     );
   });
 
-  useEffect(() => {
-    getAllQuests().then(quests => {
-      setAllQuests(quests);
-    })},
-    []);
-
   return (
     <>
       {daos.length ? (
@@ -108,7 +100,7 @@ const ExploreList = ({ handleDaoCalculate }) => {
           </FormControl>
         </Flex>
       ) : null}
-      {selectedDao ? <DaoBoard dao={selectedDao} quests={allQuests} /> : ''}
+      {selectedDao ? <DaoBoard dao={selectedDao} /> : ''}
     </>
   );
 };
