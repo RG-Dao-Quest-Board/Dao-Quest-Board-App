@@ -9,6 +9,7 @@ import { QuestModal } from "./questModal";
 
 export const DaoBoard = (props: { dao: any }) => {
     const [questMessage, setQuestMessage] = useState<string>("");
+    const [questTitle, setQuestTitle] = useState<string>("");
     const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
     const [x, setX] = useState(0)
     const [y, setY] = useState(0)
@@ -50,14 +51,19 @@ export const DaoBoard = (props: { dao: any }) => {
             return (
                 <Draggable bounds="parent" defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)} >
                     <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
-                        <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_text} marginTop={4} />
+                        <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_title} marginY={4} />
                         <QuestModal quest={quest} />
                         {userDaoMembershipNames.includes(props.dao) &&
                             (<Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteQuest(e, quest._id)} value={quest.id}>Delete</Button>)}
+
                     </Box>
                 </Draggable>
             )
         }) : null;
+    }
+    const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        e.preventDefault();
+        setQuestTitle(e.target.value);
     }
     const handleQuestChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         e.preventDefault();
@@ -69,6 +75,7 @@ export const DaoBoard = (props: { dao: any }) => {
         //submit to db
         const quest: questType = {
             dao: props.dao,
+            quest_title: questTitle,
             quest_text: questMessage,
             position_x: x,
             position_y: y
@@ -106,6 +113,8 @@ export const DaoBoard = (props: { dao: any }) => {
                                 <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
                                     {userDaoMembershipNames.includes(props.dao) ?
                                         <>
+                                            <Textarea value={questTitle}
+                                                onChange={handleTitleChange} placeholder="Quest Title" marginY={2} />
                                             <Textarea value={questMessage}
                                                 onChange={handleQuestChange} placeholder="Create a quest" marginY={4} />
                                             <Button onClick={handlePostQuest} >Post Quest</Button>
@@ -115,7 +124,6 @@ export const DaoBoard = (props: { dao: any }) => {
                                         Close
                                     </Button>
                                 </Box>
-
                             </Draggable>
                         )
                         : null
