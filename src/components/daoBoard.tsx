@@ -6,6 +6,7 @@ import { createQuest, deleteQuest, getAllQuests } from "../services/noticeServic
 import { questType } from "../types/questType";
 import { userHubDaosType } from "../types/userDao";
 import { QuestModal } from "./questModal";
+
 export const DaoBoard = (props: { dao: any }) => {
     const [questMessage, setQuestMessage] = useState<string>("");
     const [questTitle, setQuestTitle] = useState<string>("");
