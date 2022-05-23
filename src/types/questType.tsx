@@ -7,6 +7,7 @@
 //  * }
 export interface questType {
     dao: string,
+    quest_title: string,
     quest_text: string,
     position_x: number,
     position_y: number
