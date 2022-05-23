@@ -5,6 +5,7 @@ import { useUser } from "../contexts/UserContext";
 import { createQuest, deleteQuest, getAllQuests } from "../services/noticeService";
 import { questType } from "../types/questType";
 import { userHubDaosType } from "../types/userDao";
+import { QuestModal } from "./questModal";
 
 export const DaoBoard = (props: { dao: any }) => {
     const [questMessage, setQuestMessage] = useState<string>("");
@@ -50,6 +51,7 @@ export const DaoBoard = (props: { dao: any }) => {
                 <Draggable bounds="parent" defaultPosition={startingPosition} disabled={!userDaoMembershipNames.includes(props.dao)} >
                     <Box p={4} maxW='lg' borderWidth='2px' borderRadius="lg">
                         <Textarea isDisabled={!userDaoMembershipNames.includes(props.dao)} defaultValue={quest.quest_text} marginTop={4} />
+                        <QuestModal quest={quest} />
                         {userDaoMembershipNames.includes(props.dao) &&
                             (<Button onClick={(e: React.MouseEvent<HTMLButtonElement>) => handleDeleteQuest(e, quest._id)} value={quest.id}>Delete</Button>)}
                     </Box>

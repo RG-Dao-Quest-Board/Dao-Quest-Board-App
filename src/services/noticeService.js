@@ -45,4 +45,16 @@ const deleteQuest = (id) => {
     .catch((error) => error);
 };
 
-module.exports = { createQuest, getAllQuests, deleteQuest };
+const applyToQuest = (id, applicant) => {
+  return fetch(`http://localhost:5001/apply/quest/${id}`, {
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    mode: 'cors',
+    body: JSON.stringify(applicant),
+  })
+    .then((response) => response.status)
+    .then((data) => data)
+    .catch((error) => error);
+};
+
+module.exports = { createQuest, getAllQuests, deleteQuest, applyToQuest };
