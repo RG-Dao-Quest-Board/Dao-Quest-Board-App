@@ -5,10 +5,12 @@
  */
 const getAllQuests = () => {
   return fetch('http://localhost:5001/')
-    .then(response => response.json())
-    .then(data => data)
-    .catch(error => error);
-}
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
 
 /**
  *

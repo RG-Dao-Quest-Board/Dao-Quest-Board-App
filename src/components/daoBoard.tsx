@@ -29,6 +29,8 @@ export const DaoBoard = (props: { dao: any }) => {
             }, []);
             console.log("DAOQUESTS", daoQuests)
             setAllQuests(daoQuests);
+        }).catch(error => {
+            console.log(error)
         })
     }, [props.dao])
 
