@@ -7,11 +7,15 @@ import {
     ModalBody,
     ModalCloseButton,
     Button,
-    useDisclosure
+    useDisclosure,
+    Text,
+    Badge,
+    Flex
 } from '@chakra-ui/react'
 import { useCallback } from 'react';
 import { useInjectedProvider } from '../contexts/InjectedProviderContext';
 import { applyToQuest } from "../services/noticeService.js"
+import { applicantType } from "../types/questType"
 export const QuestModal = (props: { quest: any }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const {
@@ -20,7 +24,7 @@ export const QuestModal = (props: { quest: any }) => {
 
     const handleApplyToQuest = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        applyToQuest(props.quest._id, { "applicants": [address, Date.now()] })
+        applyToQuest(props.quest._id, { "applicants": { "address": address, "time": Date.now() } })
             .then((res) => { alert("Success") })
             .catch((error) => alert(error));
         ;
@@ -45,6 +49,21 @@ export const QuestModal = (props: { quest: any }) => {
                         </Button>
                         <Button variant='ghost' onClick={handleApplyToQuest}>Apply to this Task</Button>
                     </ModalFooter>
+                    <ModalBody>
+                        {props.quest.applicants.map((applicant: (applicantType)) => {
+                            return <Flex p={2}>
+                                <Text fontWeight={"bold"} pr={"10px"}> {applicant.address.substring(2, 6)} ...
+                                    {address.substring(37, 41)}  </Text>
+                                <Badge variant='solid' colorScheme='green' >
+                                    APPLIED
+                                </Badge>
+                                <Text marginLeft={'auto'} color={"gray.500"} fontSize={'13px'}>
+                                    {new Date(applicant.time).toLocaleString()}
+                                </Text>
+                            </Flex>
+                        })}
+                    </ModalBody>
+
                 </ModalContent>
             </Modal>
         </>

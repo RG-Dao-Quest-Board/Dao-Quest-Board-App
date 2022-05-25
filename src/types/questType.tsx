@@ -12,3 +12,12 @@ export interface questType {
     position_x: number,
     position_y: number
 }
+// applicant must be an object of type
+//  * {
+//  *   address: String,         The address of applicant
+//  *   time: number            Time of application
+//  * }
+export interface applicantType {
+    address: string,
+    time: number,
+}
