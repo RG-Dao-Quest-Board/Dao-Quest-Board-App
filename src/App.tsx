@@ -8,7 +8,7 @@ import { UserContextProvider } from './contexts/UserContext';
 import { Explore } from "./components/explore";
 import { ExploreContextProvider } from './contexts/ExploreContext';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+console.log("DEBUG", process.env.NODE_ENV)
 export const App = () => (
   <ChakraProvider theme={theme}>
     <UserContextProvider>

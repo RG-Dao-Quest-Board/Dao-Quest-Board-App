@@ -1,10 +1,15 @@
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000'
+    : 'https://dao-quest-api.herokuapp.com';
+
 /**
  *
  * @returns {Promise<quest>}
  * See below for notice type
  */
 const getAllQuests = () => {
-  return fetch('http://localhost:5001/')
+  return fetch(BASE_URL)
     .then((response) => response.json())
     .then((data) => data)
     .catch((error) => {
@@ -25,7 +30,7 @@ const getAllQuests = () => {
  * @returns {Promise<quest>}
  */
 const createQuest = (quest) => {
-  return fetch('http://localhost:5001/create/quest', {
+  return fetch(`${BASE_URL}/create/quest`, {
     headers: { 'Content-Type': 'application/json' },
     mode: 'cors',
     method: 'POST',
@@ -37,7 +42,7 @@ const createQuest = (quest) => {
 };
 
 const deleteQuest = (id) => {
-  return fetch(`http://localhost:5001/delete/quest/${id}`, {
+  return fetch(`${BASE_URL}/delete/quest/${id}`, {
     headers: { 'Content-Type': 'application/json' },
     method: 'DELETE',
     mode: 'cors',
@@ -48,7 +53,7 @@ const deleteQuest = (id) => {
 };
 
 const applyToQuest = (id, applicant) => {
-  return fetch(`http://localhost:5001/apply/quest/${id}`, {
+  return fetch(`${BASE_URL}/apply/quest/${id}`, {
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
     mode: 'cors',

@@ -37,7 +37,7 @@ export const QuestModal = (props: { quest: any }) => {
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalHeader>{props.quest.quest_title}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         {props.quest.quest_text}
